@@ -6,9 +6,9 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Data
-@EqualsAndHashCode(of = {"id"})
+@EqualsAndHashCode(callSuper=false, of = {"id"})
 @Document(collection = "clients")
-public class Client {
+public class Client extends BaseEntity{
 
     @Id
     private String id;
