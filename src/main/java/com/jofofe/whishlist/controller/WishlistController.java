@@ -10,6 +10,7 @@ import io.swagger.annotations.ApiResponses;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -31,7 +32,7 @@ public class WishlistController {
             @ApiResponse(code = 400, message = "Ocorreu algum erro negocial"),
             @ApiResponse(code = 500, message = "Foi gerada uma exceção"),
     })
-    public ResponseEntity<WishlistDTO> addWishlist(@RequestBody WishlistDTO wishlist) {
+    public ResponseEntity<WishlistDTO> addWishlist(@Valid @RequestBody WishlistDTO wishlist) {
         WishlistDTO wishlistDTO = wishlistService.addWishlist(wishlist);
         return ResponseEntity.ok(wishlistDTO);
     }
@@ -44,9 +45,35 @@ public class WishlistController {
             @ApiResponse(code = 400, message = "Ocorreu algum erro negocial"),
             @ApiResponse(code = 500, message = "Foi gerada uma exceção"),
     })
-    public ResponseEntity<WishlistDTO> addWishlistProduct(@PathVariable String idWishlist, @RequestBody ProductDTO product) {
+    public ResponseEntity<WishlistDTO> addWishlistProduct(@PathVariable String idWishlist, @Valid @RequestBody ProductDTO product) {
         WishlistDTO wishlistDTO = wishlistService.addProductInWishlist(idWishlist, product);
         return ResponseEntity.ok(wishlistDTO);
+    }
+
+    @GetMapping
+    @ApiOperation(value = "Retornar todas as wishlists")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Wishlists retornadas com sucesso", response = Object.class),
+            @ApiResponse(code = 404, message = "Alguma informação não foi encontrada"),
+            @ApiResponse(code = 400, message = "Ocorreu algum erro negocial"),
+            @ApiResponse(code = 500, message = "Foi gerada uma exceção"),
+    })
+    public ResponseEntity<List<WishlistDTO>> findWishlists() {
+        List<WishlistDTO> wishlistsDTO = wishlistService.findWishlists();
+        return ResponseEntity.ok(wishlistsDTO);
+    }
+
+    @GetMapping("/{idWishlist}")
+    @ApiOperation(value = "Retornar wishlist")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Wishlist retornada com sucesso", response = Object.class),
+            @ApiResponse(code = 404, message = "Alguma informação não foi encontrada"),
+            @ApiResponse(code = 400, message = "Ocorreu algum erro negocial"),
+            @ApiResponse(code = 500, message = "Foi gerada uma exceção"),
+    })
+    public ResponseEntity<WishlistDTO> findWishlist(@PathVariable String idWishlist) {
+        WishlistDTO wishlists = wishlistService.findWishlist(idWishlist);
+        return ResponseEntity.ok(wishlists);
     }
 
     @GetMapping("/{idWishlist}/products")

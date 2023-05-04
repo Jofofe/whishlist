@@ -55,6 +55,16 @@ public class WishlistService extends AbstractService<Wishlist, String, WishlistR
         return convertWishlistToDTO(wishlist);
     }
 
+    public List<WishlistDTO> findWishlists() {
+        List<Wishlist> wishlists = repository.findAll();
+        return wishlists.stream().map(this::convertWishlistToDTO).collect(Collectors.toList());
+    }
+
+    public WishlistDTO findWishlist(String idWishlist) {
+        Wishlist wishlist = repository.findById(idWishlist).orElseThrow(WishlistNotFoundException::new);
+        return convertWishlistToDTO(wishlist);
+    }
+
     public List<ProductDTO> findWishlistProducts(String idWishlist) {
         Wishlist wishlist = repository.findById(idWishlist).orElseThrow(WishlistNotFoundException::new);
         if (wishlist.getIdProducts() != null && wishlist.getIdProducts().size() == 0) {
