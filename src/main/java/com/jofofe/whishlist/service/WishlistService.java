@@ -37,17 +37,62 @@ public class WishlistService extends AbstractService<Wishlist, String, WishlistR
         this.mapper = mapper;
     }
 
+    public WishlistDTO addWishlist(WishlistDTO wishlistDTO) {
+        if (wishlistDTO.getProducts() != null && wishlistDTO.getProducts().size() > MAX_PRODUCTS) {
+            throw new MaxProductsInWishlistException();
+        }
+        Wishlist wishlist = repository.save(buildWishlist(wishlistDTO));
+        return convertWishlistToDTO(wishlist);
+    }
+
     public WishlistDTO addProductInWishlist(String idWishlist, ProductDTO productDTO) {
         Wishlist wishlist = repository.findById(idWishlist).orElseThrow(WishlistNotFoundException::new);
         if (wishlist.getIdProducts() != null && wishlist.getIdProducts().size() > MAX_PRODUCTS) {
             throw new MaxProductsInWishlistException();
         }
         Product product = productService.findProductById(productDTO.getId()).orElseThrow(ProductNotFoundException::new);
-        wishlist = updateWishlist(product, wishlist);
+        wishlist = updateWishlistProduct(product, wishlist);
         return convertWishlistToDTO(wishlist);
     }
 
-    private Wishlist updateWishlist(Product product, Wishlist wishlist) {
+    public List<ProductDTO> findWishlistProducts(String idWishlist) {
+        Wishlist wishlist = repository.findById(idWishlist).orElseThrow(WishlistNotFoundException::new);
+        if (wishlist.getIdProducts() != null && wishlist.getIdProducts().size() == 0) {
+            throw new ProductNotFoundException();
+        }
+        List<Product> wishlistProducts = productService.findProductsById(wishlist.getIdProducts());
+        return convertProductsToDTO(wishlistProducts);
+    }
+
+    public ProductDTO findWishlistProduct(String idWishlist, String idProduct) {
+        repository.findByIdAndProductsIdContaining(idWishlist, idProduct)
+                .orElseThrow(ProductNotFoundException::new);
+        Product product = productService.findProductById(idProduct).orElseThrow(ProductNotFoundException::new);
+        return mapper.convertValue(product, ProductDTO.class);
+
+    }
+
+    public void deleteWishlistProduct(String idWishlist, String idProduct) {
+        Wishlist wishlist = repository.findById(idWishlist).orElseThrow(WishlistNotFoundException::new);
+        wishlist.setIdProducts(wishlist.getIdProducts().stream()
+                .filter(wishlistIdProduct -> !wishlistIdProduct.equals(idProduct))
+                .collect(Collectors.toList()));
+        repository.save(wishlist);
+    }
+
+    private Wishlist buildWishlist(WishlistDTO wishlistDTO) {
+        Wishlist wishlist = mapper.convertValue(wishlistDTO, Wishlist.class);
+        Client client = clientService.findClientById(wishlistDTO.getClient().getId())
+                .orElseThrow(ClientNotFoundException::new);
+        List<Product> products = wishlistDTO.getProducts().stream()
+                .map(product -> productService.findProductById(product.getId()).orElseThrow(ProductNotFoundException::new))
+                .collect(Collectors.toList());
+        wishlist.setIdClient(client.getId());
+        wishlist.setIdProducts(products.stream().map(Product::getId).collect(Collectors.toList()));
+        return wishlist;
+    }
+
+    private Wishlist updateWishlistProduct(Product product, Wishlist wishlist) {
         wishlist.addProduct(product);
         return repository.save(wishlist);
     }
@@ -57,10 +102,13 @@ public class WishlistService extends AbstractService<Wishlist, String, WishlistR
         List<Product> wishlistProducts = productService.findProductsById(wishlist.getIdProducts());
         WishlistDTO wishlistDTO = mapper.convertValue(wishlist, WishlistDTO.class);
         wishlistDTO.setClient(mapper.convertValue(wishlistClient, ClientDTO.class));
-        wishlistDTO.setProducts(wishlistProducts.stream()
-                .map(wishlistProduct -> mapper.convertValue(wishlistProduct, ProductDTO.class))
-                .collect(Collectors.toList())
-        );
+        wishlistDTO.setProducts(convertProductsToDTO(wishlistProducts));
         return wishlistDTO;
+    }
+
+    private List<ProductDTO> convertProductsToDTO(List<Product> wishlistProducts) {
+        return wishlistProducts.stream()
+                .map(wishlistProduct -> mapper.convertValue(wishlistProduct, ProductDTO.class))
+                .collect(Collectors.toList());
     }
 }
