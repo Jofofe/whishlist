@@ -105,14 +105,14 @@ public class WishlistController {
     @DeleteMapping("/{idWishlist}/products/{idProduct}")
     @ApiOperation(value = "Deletar produto sa wishlist")
     @ApiResponses(value = {
-            @ApiResponse(code = 201, message = "Produto na wishlist deletado com sucesso", response = Object.class),
+            @ApiResponse(code = 204, message = "Produto na wishlist deletado com sucesso", response = Object.class),
             @ApiResponse(code = 404, message = "Alguma informação não foi encontrada"),
             @ApiResponse(code = 400, message = "Ocorreu algum erro negocial"),
             @ApiResponse(code = 500, message = "Foi gerada uma exceção"),
     })
     public ResponseEntity deleteWishlistProduct(@PathVariable String idWishlist, @PathVariable String idProduct) {
         wishlistService.deleteWishlistProduct(idWishlist, idProduct);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
 

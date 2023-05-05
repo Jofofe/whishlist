@@ -13,7 +13,7 @@ public class ProductDTO {
     private String id;
 
     @NotBlank(message = "{name.not.blank}")
-    private String nome;
+    private String name;
 
     @NotBlank(message = "{description.not.blank}")
     private String description;

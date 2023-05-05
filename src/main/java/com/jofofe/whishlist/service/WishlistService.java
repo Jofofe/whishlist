@@ -75,7 +75,7 @@ public class WishlistService extends AbstractService<Wishlist, String, WishlistR
     }
 
     public ProductDTO findWishlistProduct(String idWishlist, String idProduct) {
-        repository.findByIdAndProductsIdContaining(idWishlist, idProduct)
+        repository.findByIdAndIdProductsContaining(idWishlist, idProduct)
                 .orElseThrow(ProductNotFoundException::new);
         Product product = productService.findProductById(idProduct).orElseThrow(ProductNotFoundException::new);
         return mapper.convertValue(product, ProductDTO.class);
@@ -94,11 +94,13 @@ public class WishlistService extends AbstractService<Wishlist, String, WishlistR
         Wishlist wishlist = mapper.convertValue(wishlistDTO, Wishlist.class);
         Client client = clientService.findClientById(wishlistDTO.getClient().getId())
                 .orElseThrow(ClientNotFoundException::new);
-        List<Product> products = wishlistDTO.getProducts().stream()
-                .map(product -> productService.findProductById(product.getId()).orElseThrow(ProductNotFoundException::new))
-                .collect(Collectors.toList());
         wishlist.setIdClient(client.getId());
-        wishlist.setIdProducts(products.stream().map(Product::getId).collect(Collectors.toList()));
+        if (wishlistDTO.getProducts() != null) {
+            List<Product> products = wishlistDTO.getProducts().stream()
+                    .map(product -> productService.findProductById(product.getId()).orElseThrow(ProductNotFoundException::new))
+                    .collect(Collectors.toList());
+            wishlist.setIdProducts(products.stream().map(Product::getId).collect(Collectors.toList()));
+        }
         return wishlist;
     }
 

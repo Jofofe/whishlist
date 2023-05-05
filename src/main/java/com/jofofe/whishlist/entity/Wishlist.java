@@ -1,5 +1,6 @@
 package com.jofofe.whishlist.entity;
 
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.data.annotation.Id;
@@ -12,8 +13,9 @@ import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
 @Data
+@Builder
 @EqualsAndHashCode(callSuper=false, of = {"id"})
-@Document(collection = "wishlists")
+@Document(collection = "wishlist")
 public class Wishlist extends BaseEntity {
 
     @Id
