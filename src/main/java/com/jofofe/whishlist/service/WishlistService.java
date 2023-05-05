@@ -24,6 +24,8 @@ public class WishlistService extends AbstractService<Wishlist, String, WishlistR
 
     private static final Integer MAX_PRODUCTS = 20;
 
+    private static final Integer NO_PRODUCTS = 0;
+
     private final ProductService productService;
 
     private final ClientService clientService;
@@ -67,7 +69,7 @@ public class WishlistService extends AbstractService<Wishlist, String, WishlistR
 
     public List<ProductDTO> findWishlistProducts(String idWishlist) {
         Wishlist wishlist = repository.findById(idWishlist).orElseThrow(WishlistNotFoundException::new);
-        if (wishlist.getIdProducts() != null && wishlist.getIdProducts().size() == 0) {
+        if (wishlist.getIdProducts() == null || wishlist.getIdProducts().size() == NO_PRODUCTS) {
             throw new ProductNotFoundException();
         }
         List<Product> wishlistProducts = productService.findProductsById(wishlist.getIdProducts());
