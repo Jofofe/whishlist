@@ -1,7 +1,5 @@
 package com.jofofe.whishlist.controller;
 
-import com.jofofe.whishlist.dto.ProductDTO;
-import com.jofofe.whishlist.dto.ClientDTO;
 import com.jofofe.whishlist.dto.ClientDTO;
 import com.jofofe.whishlist.service.ClientService;
 import io.swagger.annotations.Api;
