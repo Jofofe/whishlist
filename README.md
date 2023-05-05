@@ -15,7 +15,7 @@ Para rodar o projeto:
 
 Tem um loader para carregar Clients e Products para os testes, então assim que a aplicação iniciar, eles já estarão na base de dados
 
-Com a aplicação iniciada, é possivel acessar a documentação do Swagger no endereço http://localhost:8080/api/swagger-ui.html
+Com a aplicação iniciada, é possivel acessar a documentação do Swagger no endereço http://localhost:8080/api/swagger-ui/index.html
 
 ----------------------------------------------------------------------------------------------------------------------------------------
 

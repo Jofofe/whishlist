@@ -29,7 +29,6 @@ public class SwaggerConfig {
                 .apis(RequestHandlerSelectors.withClassAnnotation(RestController.class))
                 .paths(PathSelectors.any())
                 .build()
-                .pathMapping("/api")
                 .useDefaultResponseMessages(false)
                 .directModelSubstitute(Object.class, Void.class)
                 .apiInfo(apiInfo());
